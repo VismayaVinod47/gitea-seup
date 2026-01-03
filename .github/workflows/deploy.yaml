@@ -13,10 +13,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Verify files
+      - name: Export secrets to environment
         run: |
-          pwd
-          ls -la
+          echo "GITEA_EMAIL=${{ vars.GITEA_EMAIL }}" >> $GITHUB_ENV
+          echo "GITEA_EMAIL_PASSWORD=${{ secrets.GITEA_EMAIL_PASSWORD }}" >> $GITHUB_ENV
 
       - name: Deploy Gitea
         run: |
