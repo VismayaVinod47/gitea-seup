@@ -1,0 +1,23 @@
+name: Deploy Gitea on Docker Swarm
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    env:
+      GITEA_EMAIL: ${{ secrets.GITEA_EMAIL }}
+      GITEA_EMAIL_PASSWORD: ${{ secrets.GITEA_EMAIL_PASSWORD }}
+    
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Deploy Gitea
+        run: |
+          docker stack deploy -c gitea-stack.yml gitea
+

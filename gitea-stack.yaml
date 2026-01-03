@@ -1,0 +1,44 @@
+version: "3.9"
+
+services:
+  gitea:
+    image: gitea/gitea:1.22
+    ports:
+      - "3000:3000"
+      - "2222:22"
+    volumes:
+      - gitea_data:/data
+
+    environment:
+      USER_UID: 1000
+      USER_GID: 1000
+
+      # ===== SERVER =====
+      GITEA__server__DOMAIN: localhost
+      GITEA__server__ROOT_URL: http://localhost:3000/
+      GITEA__server__SSH_PORT: 2222
+      GITEA__server__SSH_DOMAIN: localhost
+
+      # ===== MAIL (GMAIL SMTPS) =====
+      GITEA__mailer__ENABLED: "true"
+      GITEA__mailer__PROTOCOL: smtps
+      GITEA__mailer__SMTP_ADDR: smtp.gmail.com
+      GITEA__mailer__SMTP_PORT: "465"
+      GITEA__mailer__USER: ${GITEA_EMAIL}
+      GITEA__mailer__PASSWD: ${GITEA_EMAIL_PASSWORD}
+      GITEA__mailer__FROM: Gitea <${GITEA_EMAIL}>
+
+      # ===== SECURITY =====
+      GITEA__security__INSTALL_LOCK: "true"
+      GITEA__service__DISABLE_REGISTRATION: "true"
+
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: any
+      placement:
+        constraints:
+          - node.role == manager
+
+volumes:
+  gitea_data:
