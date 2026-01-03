@@ -9,15 +9,19 @@ jobs:
   deploy:
     runs-on: self-hosted
 
-    env:
-      GITEA_EMAIL: ${{ secrets.GITEA_EMAIL }}
-      GITEA_EMAIL_PASSWORD: ${{ secrets.GITEA_EMAIL_PASSWORD }}
-    
-
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify files
+        run: |
+          pwd
+          ls -la
 
       - name: Deploy Gitea
         run: |
-          docker stack deploy -c gitea-stack.yml gitea
+          docker swarm init || true
+          docker stack deploy -c gitea-stack.yaml gitea
 
+      - name: Verify services
+        run: docker service ls
