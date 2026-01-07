@@ -41,7 +41,9 @@ services:
   node-exporter:
     image: prom/node-exporter:latest
     deploy:
-      mode: global        # 🔥 runs on EVERY node
+      mode: global                # runs on every node
+      restart_policy:             # ✅ MUST be here
+        condition: on-failure
     ports:
       - target: 9100
         published: 9100
@@ -55,8 +57,6 @@ services:
       - '--path.procfs=/host/proc'
       - '--path.sysfs=/host/sys'
       - '--path.rootfs=/rootfs'
-    restart_policy:
-      condition: on-failure
 
 volumes:
   grafana_data:
