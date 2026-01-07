@@ -1,4 +1,4 @@
-name: Deploy Grafana Monitoring Stack
+name: Deploy Grafana & Prometheus (Docker Swarm)
 
 on:
   push:
@@ -13,10 +13,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Start Grafana stack
-        run: |
-          docker compose down || true
-          docker compose up -d
+      - name: Initialize Docker Swarm
+        run: docker swarm init || true
 
-      - name: Verify containers
-        run: docker ps
+      - name: Deploy monitoring stack
+        run: docker stack deploy -c grafana-stack.yaml monitoring
+
+      - name: Verify services
+        run: docker service ls
