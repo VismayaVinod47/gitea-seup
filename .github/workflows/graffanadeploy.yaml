@@ -1,0 +1,22 @@
+name: Deploy Grafana Monitoring Stack
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Start Grafana stack
+        run: |
+          docker compose down || true
+          docker compose up -d
+
+      - name: Verify containers
+        run: docker ps
