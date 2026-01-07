@@ -10,14 +10,7 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Initialize Docker Swarm
-        run: docker swarm init || true
-
-      - name: Deploy monitoring stack
-        run: docker stack deploy -c grafana-stack.yaml monitoring
-
-      - name: Verify services
-        run: docker service ls
+      - uses: actions/checkout@v4
+      - run: docker swarm init || true
+      - run: docker stack deploy -c grafana-stack.yaml monitoring
+      - run: docker service ls

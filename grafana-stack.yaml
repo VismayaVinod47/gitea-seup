@@ -38,5 +38,25 @@ services:
         constraints:
           - node.role == manager
 
+  node-exporter:
+    image: prom/node-exporter:latest
+    deploy:
+      mode: global        # 🔥 runs on EVERY node
+    ports:
+      - target: 9100
+        published: 9100
+        protocol: tcp
+        mode: host
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--path.rootfs=/rootfs'
+    restart_policy:
+      condition: on-failure
+
 volumes:
   grafana_data:
