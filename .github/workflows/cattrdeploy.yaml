@@ -10,18 +10,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1️⃣ Checkout repository
+    # 1️⃣ Checkout code
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 2️⃣ Setup SSH key (CRITICAL)
+    # 2️⃣ Setup SSH key (RUNNER CONTEXT)
     - name: Setup SSH key
       run: |
-        mkdir -p /github/home/.ssh
-        echo "${{ secrets.SERVER_SSH_KEY }}" > /github/home/.ssh/id_ed25519
-        chmod 600 /github/home/.ssh/id_ed25519
+        mkdir -p $HOME/.ssh
+        echo "${{ secrets.SERVER_SSH_KEY }}" > $HOME/.ssh/id_ed25519
+        chmod 600 $HOME/.ssh/id_ed25519
 
-    # 3️⃣ Copy files to EC2 server
+    # 3️⃣ Copy files to server (ACTION CONTAINER CONTEXT)
     - name: Copy files to server
       uses: appleboy/scp-action@v0.1.7
       with:
@@ -31,7 +31,7 @@ jobs:
         source: "."
         target: /home/${{ secrets.SERVER_USER }}/cattr
 
-    # 4️⃣ Deploy on EC2 server
+    # 4️⃣ Deploy on server
     - name: Deploy on server
       uses: appleboy/ssh-action@v1.0.3
       with:
