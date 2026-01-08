@@ -10,19 +10,16 @@ services:
     depends_on:
       cattrdb:
         condition: service_healthy
+    volumes:
+      - ./storage:/app/storage
     environment:
       DB_USERNAME: root
       DB_PASSWORD: cattrpass
       DB_HOST: cattrdb
-
-      APP_KEY: base64:luGMJ9anzzH9A80CIIrcbbk37oj/1SVo8cFvCtj9pxw
+      APP_KEY: base64:lg1m/12MHBbBpiWTXjot98Q9MP/nSzPrvLEU2beD+2Y=
       APP_ADMIN_EMAIL: admin@cattr.app
-      APP_ADMIN_PASSWORD: Admin@123
+      APP_ADMIN_PASSWORD: admin123
       APP_ADMIN_NAME: Admin
-    volumes:
-      - ./storage:/app/storage
-    networks:
-      - cattr
 
   cattrdb:
     image: percona:8.0
@@ -33,15 +30,8 @@ services:
       MYSQL_ROOT_PASSWORD: cattrpass
     volumes:
       - ./mysql:/var/lib/mysql
-    cap_add:
-      - SYS_NICE
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pcattrpass", "-u", "root"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "--password=cattrpass"]
       timeout: 20s
       retries: 10
-    networks:
-      - cattr
 
-networks:
-  cattr:
-    driver: bridge
