@@ -10,34 +10,27 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1️⃣ Checkout code
+    # 1️⃣ Checkout repository
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 2️⃣ Setup SSH key (RUNNER CONTEXT)
-    - name: Setup SSH key
-      run: |
-        mkdir -p $HOME/.ssh
-        echo "${{ secrets.SERVER_SSH_KEY }}" > $HOME/.ssh/id_ed25519
-        chmod 600 $HOME/.ssh/id_ed25519
-
-    # 3️⃣ Copy files to server (ACTION CONTAINER CONTEXT)
+    # 2️⃣ Copy files to EC2 server
     - name: Copy files to server
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.SERVER_IP }}
         username: ${{ secrets.SERVER_USER }}
-        key_path: /github/home/.ssh/id_ed25519
+        key: ${{ secrets.SERVER_SSH_KEY }}
         source: "."
         target: /home/${{ secrets.SERVER_USER }}/cattr
 
-    # 4️⃣ Deploy on server
+    # 3️⃣ Deploy on EC2 server
     - name: Deploy on server
       uses: appleboy/ssh-action@v1.0.3
       with:
         host: ${{ secrets.SERVER_IP }}
         username: ${{ secrets.SERVER_USER }}
-        key_path: /github/home/.ssh/id_ed25519
+        key: ${{ secrets.SERVER_SSH_KEY }}
         script: |
           cd /home/${{ secrets.SERVER_USER }}/cattr
           docker-compose pull
