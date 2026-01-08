@@ -10,15 +10,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v4
+    # 1️⃣ Checkout repository
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-    # 🔑 Write SSH key to file
+    # 2️⃣ Setup SSH key (CRITICAL)
     - name: Setup SSH key
       run: |
         mkdir -p /github/home/.ssh
         echo "${{ secrets.SERVER_SSH_KEY }}" > /github/home/.ssh/id_ed25519
         chmod 600 /github/home/.ssh/id_ed25519
 
+    # 3️⃣ Copy files to EC2 server
     - name: Copy files to server
       uses: appleboy/scp-action@v0.1.7
       with:
@@ -28,6 +31,7 @@ jobs:
         source: "."
         target: /home/${{ secrets.SERVER_USER }}/cattr
 
+    # 4️⃣ Deploy on EC2 server
     - name: Deploy on server
       uses: appleboy/ssh-action@v1.0.3
       with:
