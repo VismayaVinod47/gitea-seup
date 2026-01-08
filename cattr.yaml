@@ -1,0 +1,47 @@
+version: "3.8"
+
+services:
+  app:
+    image: registry.git.amazingcat.net/cattr/core/app:latest
+    container_name: cattr-app
+    restart: unless-stopped
+    ports:
+      - "8380:80"
+    depends_on:
+      cattrdb:
+        condition: service_healthy
+    environment:
+      DB_USERNAME: root
+      DB_PASSWORD: cattrpass
+      DB_HOST: cattrdb
+
+      APP_KEY: base64:luGMJ9anzzH9A80CIIrcbbk37oj/1SVo8cFvCtj9pxw
+      APP_ADMIN_EMAIL: admin@cattr.app
+      APP_ADMIN_PASSWORD: Admin@123
+      APP_ADMIN_NAME: Admin
+    volumes:
+      - ./storage:/app/storage
+    networks:
+      - cattr
+
+  cattrdb:
+    image: percona:8.0
+    container_name: cattr-db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: cattr
+      MYSQL_ROOT_PASSWORD: cattrpass
+    volumes:
+      - ./mysql:/var/lib/mysql
+    cap_add:
+      - SYS_NICE
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-pcattrpass", "-u", "root"]
+      timeout: 20s
+      retries: 10
+    networks:
+      - cattr
+
+networks:
+  cattr:
+    driver: bridge
