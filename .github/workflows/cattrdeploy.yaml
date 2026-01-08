@@ -1,23 +1,20 @@
-name: Run CATTR Service
+name: Deploy Cattr Service
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+      - main
 
 jobs:
-  run-cattr:
-    runs-on: ubuntu-latest
+  deploy:
+    runs-on: self-hosted
 
     steps:
-      - name: Start ssh-agent and add key
-        uses: webfactory/ssh-agent@v0.9.0
-        with:
-          ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      - name: Run CATTR on server
-        run: |
-          ssh -o StrictHostKeyChecking=no \
-              ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-            mkdir -p ~/cattr
-            cd ~/cattr
-            docker compose up -d
-          EOF
+      - name: Pull latest images
+        run: docker compose pull
+
+      - name: Restart services
+        run: docker compose up -d
