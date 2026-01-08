@@ -1,8 +1,7 @@
-version: "3.8"
-
 services:
   app:
     image: registry.git.amazingcat.net/cattr/core/app:latest
+    platform: linux/amd64
     container_name: cattr-app
     restart: unless-stopped
     ports:
@@ -12,8 +11,6 @@ services:
         condition: service_healthy
     volumes:
       - cattr_storage:/app/storage
-    networks:
-      - cattr
     environment:
       DB_USERNAME: root
       DB_PASSWORD: cattrpass
@@ -22,9 +19,12 @@ services:
       APP_ADMIN_EMAIL: admin@cattr.app
       APP_ADMIN_PASSWORD: StrongPass123!
       APP_ADMIN_NAME: Admin
+    networks:
+      - cattr
 
   cattrdb:
     image: percona:8.0
+    platform: linux/amd64
     container_name: cattr-db
     restart: unless-stopped
     environment:
@@ -48,5 +48,3 @@ volumes:
 networks:
   cattr:
     driver: bridge
-
-

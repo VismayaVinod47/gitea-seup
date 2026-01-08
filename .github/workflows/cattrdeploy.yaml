@@ -9,7 +9,7 @@ jobs:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout repository (safe)
+      - name: Checkout repository (macOS safe)
         uses: actions/checkout@v4
         with:
           clean: false
@@ -17,5 +17,5 @@ jobs:
       - name: Pull latest images
         run: docker compose -f cattr.yaml pull
 
-      - name: Restart services
+      - name: Start / Update Cattr
         run: docker compose -f cattr.yaml up -d
