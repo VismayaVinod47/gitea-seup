@@ -1,32 +1,20 @@
-name: Deploy CATTR
+name: Run CATTR Service
 
 on:
-  push:
-    branches:
-      - main
   workflow_dispatch:
 
 jobs:
-  deploy:
+  run-cattr:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Setup SSH key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SERVER_SSH_KEY_B64 }}" | base64 --decode > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-
-      - name: Deploy CATTR
+      - name: Start CATTR on server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.SERVER_USER }}
-          key_path: ~/.ssh/id_ed25519
+          key: ${{ secrets.SERVER_SSH_KEY }}
           script: |
-            if [ ! -d "$HOME/cattr" ]; then
-              git clone https://github.com/${{ github.repository }}.git $HOME/cattr
-            fi
-            cd $HOME/cattr
-            git pull origin main
+            mkdir -p ~/cattr
+            cd ~/cattr
             docker compose up -d
