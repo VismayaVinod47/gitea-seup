@@ -15,16 +15,16 @@ jobs:
     # 🔑 Write SSH key to file
     - name: Setup SSH key
       run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_ed25519
-        chmod 600 ~/.ssh/id_ed25519
+        mkdir -p /github/home/.ssh
+        echo "${{ secrets.SERVER_SSH_KEY }}" > /github/home/.ssh/id_ed25519
+        chmod 600 /github/home/.ssh/id_ed25519
 
     - name: Copy files to server
       uses: appleboy/scp-action@v0.1.7
       with:
         host: ${{ secrets.SERVER_IP }}
         username: ${{ secrets.SERVER_USER }}
-        key_path: ~/.ssh/id_ed25519
+        key_path: /github/home/.ssh/id_ed25519
         source: "."
         target: /home/${{ secrets.SERVER_USER }}/cattr
 
@@ -33,7 +33,7 @@ jobs:
       with:
         host: ${{ secrets.SERVER_IP }}
         username: ${{ secrets.SERVER_USER }}
-        key_path: ~/.ssh/id_ed25519
+        key_path: /github/home/.ssh/id_ed25519
         script: |
           cd /home/${{ secrets.SERVER_USER }}/cattr
           docker-compose pull
