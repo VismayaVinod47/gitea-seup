@@ -2,19 +2,20 @@ name: Deploy Cattr Service
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main ]
 
 jobs:
   deploy:
     runs-on: self-hosted
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
+      - name: Checkout repository (safe)
+        uses: actions/checkout@v4
+        with:
+          clean: false
 
       - name: Pull latest images
-        run: docker compose pull
+        run: docker compose -f cattr.yaml pull
 
       - name: Restart services
-        run: docker compose up -d
+        run: docker compose -f cattr.yaml up -d
