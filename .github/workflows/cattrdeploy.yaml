@@ -8,19 +8,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Create SSH key file
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SERVER_SSH_KEY }}" > ~/.ssh/id_ed25519
-          chmod 600 ~/.ssh/id_ed25519
-
-      - name: Start CATTR on server
-        uses: appleboy/ssh-action@v1.0.3
+      - name: Start ssh-agent and add key
+        uses: webfactory/ssh-agent@v0.9.0
         with:
-          host: ${{ secrets.SERVER_IP }}
-          username: ${{ secrets.SERVER_USER }}
-          key_path: ~/.ssh/id_ed25519
-          script: |
+          ssh-private-key: ${{ secrets.SERVER_SSH_KEY }}
+
+      - name: Run CATTR on server
+        run: |
+          ssh -o StrictHostKeyChecking=no \
+              ${{ secrets.SERVER_USER }}@${{ secrets.SERVER_IP }} << 'EOF'
             mkdir -p ~/cattr
             cd ~/cattr
             docker compose up -d
+          EOF
